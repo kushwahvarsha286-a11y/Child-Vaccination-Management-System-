@@ -1,0 +1,24 @@
+{
+  "exclude": [
+    "**/__pycache__",
+    "**/venv",
+    "**/.venv",
+    "**/node_modules",
+    "**/.*",
+    "**/build",
+    "**/dist",
+    "**/*.egg-info"
+  ],
+  "include": ["backend"],
+  "typeCheckingMode": "basic",
+  "extraPaths": [
+    "backend",
+    "C:\\Users\\hp\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages"
+  ],
+  "reportGeneralTypeIssues": false,
+  "reportOptionalMemberAccess": false,
+  "reportOptionalCallIssue": false,
+  "reportCallIssue": false,
+  "reportArgumentType": false,
+  "reportAttributeAccessIssue": false
+}
