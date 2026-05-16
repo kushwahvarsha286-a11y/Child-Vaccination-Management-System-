@@ -7,7 +7,7 @@ A web application for tracking child vaccination schedules, appointments, provid
 
 ## Project Overview
 
-This repository contains a Flask backend and a static frontend. The backend provides APIs for authentication, child and vaccination management, appointment scheduling, dashboards, and PDF certificate generation. The frontend is served from `frontend/index.html`.
+This repository contains a Flask backend and a static frontend. The backend provides APIs for authentication, child and vaccination management, appointment scheduling, dashboards, and PDF certificate generation.
 
 ---
 
