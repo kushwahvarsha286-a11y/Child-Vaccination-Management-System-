@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="VacciCare – The modern child vaccination management system. Track vaccinations, schedule appointments, and connect with healthcare providers.">
+    <title>VacciCare - Child Vaccination Management System</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=6">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Dashboards -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 for Modern Popup Notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="mainNav">
+        <div class="container navbar-container">
+            <div class="logo">
+                <h2>🏥 VacciCare</h2>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <!-- Public links: hidden when logged in -->
+                <a href="#home" onclick="showPage('home')" class="nav-item public-nav-item">Home</a>
+                <a href="#about" onclick="showPage('about')" class="nav-item public-nav-item">About</a>
+                <a href="#features" onclick="showPage('features')" class="nav-item public-nav-item">Features</a>
+                <a href="#contact" onclick="showPage('contact')" class="nav-item public-nav-item">Contact</a>
+                <!-- Authenticated nav links (hidden by default) -->
+                <a href="#dashboard" onclick="showPage('dashboard')" class="nav-item auth-nav-item hidden" id="navDashboard">Dashboard</a>
+                <a href="#children" onclick="showPage('children')" class="nav-item auth-nav-item hidden" id="navChildren">Children</a>
+                <a href="#appointments" onclick="showPage('appointments')" class="nav-item auth-nav-item hidden" id="navAppointments">Appointments</a>
+                <a href="#providers" onclick="showPage('providers')" class="nav-item auth-nav-item hidden" id="navProviders">Providers</a>
+                <a href="#vaccinations" onclick="showPage('vaccinations')" class="nav-item auth-nav-item hidden" id="navVaccinations">Vaccinations</a>
+                <a href="#stockManagement" onclick="showPage('stockManagement')" class="nav-item auth-nav-item hidden" id="navStock">📦 Stock</a>
+                <a href="#adminUsers" onclick="showPage('adminUsers'); loadAdminUsers();" class="nav-item auth-nav-item hidden" id="navAdminUsers">👥 Users</a>
+                <a href="#profile" onclick="showPage('profile'); loadProfile();" class="nav-item auth-nav-item hidden" id="navProfile">My Profile</a>
+                <a href="#notifications" onclick="showPage('notifications')" class="nav-item auth-nav-item hidden" id="navNotifications">🔔</a>
+                <!-- User identity panel (shown when logged in) -->
+                <div class="nav-user-info hidden" id="navUserInfo"></div>
+                <div class="nav-buttons">
+                    <button class="btn btn-outline" onclick="showPage('login')" id="loginBtn">Login</button>
+                    <button class="btn btn-outline" onclick="showPage('signup')" id="signupBtn">Parent Sign Up</button>
+                    <button class="btn btn-primary" onclick="showPage('staffRegister')" id="staffRegisterBtn">Staff Register</button>
+                    <button class="btn btn-danger btn-small hidden" onclick="logoutUser()" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </div>
+            <div class="hamburger" id="hamburgerBtn" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile nav overlay -->
+    <div class="nav-overlay" id="navOverlay" onclick="toggleMenu()"></div>
+
+    <main class="container">
+        <!-- HOME PAGE (LANDING PAGE) -->
+        <div id="home" class="page active">
+            <!-- IMAGE CAROUSEL SECTION -->
+            <section class="hero-carousel-section">
+                <div class="carousel-container">
+                    <div class="carousel-wrapper">
+                        <div class="carousel-slide active" style="background-image: url('images/Carousel01.jpeg')">
+                        </div>
+                        <div class="carousel-slide" style="background-image: url('images/Carousel02.jpeg')">
+                        </div>
+                        <div class="carousel-slide" style="background-image: url('images/Carousel03.jpeg')">
+                        </div>
+                        <div class="carousel-slide" style="background-image: url('images/Carousel04.jpeg')">
+                        </div>
+                    </div>
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-controls">
+                        <span class="dot" onclick="currentSlide(0)"></span>
+                        <span class="dot" onclick="currentSlide(1)"></span>
+                        <span class="dot" onclick="currentSlide(2)"></span>
+                        <span class="dot" onclick="currentSlide(3)"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Welcome to VacciCare</h1>
+                    <p>The Modern Solution for Child Vaccination Management</p>
+                    <p class="hero-subtitle">Keep your children healthy with our comprehensive vaccination tracking
+                        system</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary btn-lg" onclick="showPage('signup')">Create Account</button>
+                        <button class="btn btn-outline-dark btn-lg" onclick="showPage('features')">Learn More</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="images/hero.jpeg" alt="Healthcare Professional" class="hero-img">
+                </div>
+            </section>
+
+            <!-- Quick Stats -->
+            <section class="stats-section gradient-light-blue">
+                <div class="stat-card">
+                    <h3>10,000+</h3>
+                    <p>Children Tracked</p>
+                </div>
+                <div class="stat-card">
+                    <h3>50,000+</h3>
+                    <p>Vaccinations Recorded</p>
+                </div>
+                <div class="stat-card">
+                    <h3>1,000+</h3>
+                    <p>Trusted Providers</p>
+                </div>
+                <div class="stat-card">
+                    <h3>98%</h3>
+                    <p>User Satisfaction</p>
+                </div>
+            </section>
+
+            <!-- Features Preview -->
+            <section class="features-preview gradient-light-green">
+                <h2>Why Choose VacciCare?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="images/registraton.jpeg" alt="Child Registration" class="card-img">
+                        </div>
+                        <h3>Easy Registration</h3>
+                        <p>Register your children in minutes with simple, intuitive forms</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="images/tracking.jpeg" alt="Vaccination Tracking" class="card-img">
+                        </div>
+                        <h3>Vaccination Tracking</h3>
+                        <p>Keep accurate records of all vaccinations with dates and providers</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="images/scheduling.jpeg" alt="Smart Scheduling" class="card-img">
+                        </div>
+                        <h3>Smart Scheduling</h3>
+                        <p>Schedule appointments and receive automatic reminders</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="images/alert.jpeg" alt="Notifications" class="card-img">
+                        </div>
+                        <h3>Smart Alerts</h3>
+                        <p>Never miss an appointment with timely notifications</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="images/network.jpeg" alt="Healthcare Providers" class="card-img">
+                        </div>
+                        <h3>Provider Network</h3>
+                        <p>Find and connect with trusted healthcare providers</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-image">
+                            <img src="images/dashboard.jpeg" alt="Health Analytics" class="card-img">
+                        </div>
+                        <h3>Health Dashboard</h3>
+                        <p>View comprehensive statistics about your children's health</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Social Impact Section -->
+            <section class="impact-section gradient-light-purple">
+                <h2>Our Mission: Healthier Children, Brighter Future</h2>
+                <div class="impact-grid">
+                    <div class="impact-card">
+                        <div class="impact-image">
+                            <img src="images/child_development.jpeg" alt="Healthy Children" class="impact-img">
+                        </div>
+                        <h3>Ensuring Healthy Child Development</h3>
+                        <p>Vaccinations are the foundation of good health. We make tracking them effortless so your
+                            children stay protected.</p>
+                    </div>
+                    <div class="impact-card">
+                        <div class="impact-image">
+                            <img src="images/commmunity.jpeg" alt="Community Care" class="impact-img">
+                        </div>
+                        <h3>Building Healthier Communities</h3>
+                        <p>By ensuring proper immunization, we help create safer, healthier communities for all
+                            children.</p>
+                    </div>
+                    <div class="impact-card">
+                        <div class="impact-image">
+                            <img src="images/parent.jpeg" alt="Parent Support" class="impact-img">
+                        </div>
+                        <h3>Supporting Every Parent</h3>
+                        <p>We provide the tools and support parents need to give their children the best start in life.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="cta-section gradient-blue-primary">
+                <h2>Start Managing Your Child's Vaccinations Today</h2>
+                <p>Join thousands of parents who trust VacciCare with their children's health</p>
+                <button class="btn btn-white" onclick="showPage('signup')">Create Your Account</button>
+            </section>
+        </div>
+
+        <!-- LOGIN PAGE -->
+        <div id="login" class="page">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-logo">🏥</div>
+                    <h2>Welcome Back</h2>
+                    <p class="auth-subtitle">Sign in to your VacciCare account</p>
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="loginEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                            <input type="email" id="loginEmail" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+                            <input type="password" id="loginPassword" required placeholder="••••••••">
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="rememberMe">
+                            <label for="rememberMe">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                    </form>
+                    <p class="auth-link">Don't have an account? <a href="#" onclick="showPage('signup')">Sign up as Parent</a></p>
+                    <div class="auth-role-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Staff &amp; Admin accounts are created by the system administrator.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIGNUP PAGE (Parent Only) -->
+        <div id="signup" class="page">
+            <div class="auth-container">
+                <div class="auth-card auth-card-wide">
+                    <div class="auth-logo">👨‍👩‍👧</div>
+                    <h2>Parent Registration</h2>
+                    <p class="auth-subtitle">Create your account to manage your child's vaccinations</p>
+                    <form id="signupForm" onsubmit="handleSignup(event)">
+                        <div class="signup-section-title"><i class="fas fa-user"></i> Parent Information</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName"><i class="fas fa-user"></i> First Name *</label>
+                                <input type="text" id="firstName" required placeholder="First name">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" required placeholder="Last name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail"><i class="fas fa-envelope"></i> Email Address *</label>
+                            <input type="email" id="signupEmail" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneNumber"><i class="fas fa-phone"></i> Contact Number *</label>
+                            <input type="tel" id="phoneNumber" required placeholder="6XXXXXXXXX" maxlength="10" pattern="[6-9][0-9]{9}">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupAddress"><i class="fas fa-map-marker-alt"></i> Address *</label>
+                            <input type="text" id="signupAddress" required placeholder="Full residential address">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="signupPassword"><i class="fas fa-lock"></i> Password *</label>
+                                <input type="password" id="signupPassword" required placeholder="Min. 6 characters">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password *</label>
+                                <input type="password" id="confirmPassword" required placeholder="Repeat password">
+                            </div>
+                        </div>
+
+                        <hr class="section-divider">
+                        <div class="signup-section-title"><i class="fas fa-child"></i> Child Information (Mandatory)</div>
+
+                        <div class="form-group">
+                            <label for="signupChildName"><i class="fas fa-user-tag"></i> Child Full Name *</label>
+                            <input type="text" id="signupChildName" required placeholder="Child's full name">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="signupChildGender"><i class="fas fa-venus-mars"></i> Gender *</label>
+                                <select id="signupChildGender" required>
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="signupChildDob"><i class="fas fa-calendar-alt"></i> Date of Birth *</label>
+                                <input type="date" id="signupChildDob" required>
+                                <small class="form-hint">Used to auto-generate vaccination schedule.</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg"><i class="fas fa-user-plus"></i> Create Account</button>
+                    </form>
+                    <p class="auth-link">Already have an account? <a href="#" onclick="showPage('login')">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAFF REGISTRATION PAGE -->
+        <div id="staffRegister" class="page">
+            <div class="auth-container">
+                <div class="auth-card auth-card-wide">
+                    <div class="auth-logo">👨‍⚕️</div>
+                    <h2>Staff Registration</h2>
+                    <p class="auth-subtitle">Register as healthcare staff - requires admin approval</p>
+                    <form id="staffRegisterForm" onsubmit="handleStaffRegister(event)">
+                        <div class="signup-section-title"><i class="fas fa-user-md"></i> Personal Information</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="staffFirstName"><i class="fas fa-user"></i> First Name *</label>
+                                <input type="text" id="staffFirstName" required placeholder="First name">
+                            </div>
+                            <div class="form-group">
+                                <label for="staffLastName">Last Name *</label>
+                                <input type="text" id="staffLastName" required placeholder="Last name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffEmail"><i class="fas fa-envelope"></i> Email *</label>
+                            <input type="email" id="staffEmail" required placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="staffPhone"><i class="fas fa-phone"></i> Contact Number</label>
+                            <input type="tel" id="staffPhone" placeholder="6XXXXXXXXX" maxlength="10" pattern="[6-9][0-9]{9}">
+                        </div>
+                        <div class="form-group">
+                            <label for="staffSpecialty"><i class="fas fa-stethoscope"></i> Specialty</label>
+                            <input type="text" id="staffSpecialty" placeholder="Pediatrician, Nurse, etc.">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="staffPassword"><i class="fas fa-lock"></i> Password *</label>
+                                <input type="password" id="staffPassword" required placeholder="Min. 6 characters">
+                            </div>
+                            <div class="form-group">
+                                <label for="staffConfirmPassword">Confirm Password *</label>
+                                <input type="password" id="staffConfirmPassword" required placeholder="Repeat password">
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Your registration will be reviewed by an administrator. You will receive login credentials once approved.
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg"><i class="fas fa-user-plus"></i> Submit Registration</button>
+                    </form>
+                    <p class="auth-link">Already have an account? <a href="#" onclick="showPage('login')">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT PAGE -->
+        <div id="about" class="page">
+            <div class="card content-page">
+                <h2>About VacciCare</h2>
+
+                <section class="about-section">
+                    <h3>Our Mission</h3>
+                    <p>VacciCare is dedicated to making child vaccination management simple, accessible, and reliable
+                        for parents and healthcare providers worldwide. We believe every child deserves proper health
+                        tracking and timely immunizations.</p>
+                </section>
+
+                <section class="about-section">
+                    <h3>Why We Started</h3>
+                    <p>Many parents struggle to keep track of their children's vaccination schedules, dates, and
+                        provider information. This can lead to missed appointments and incomplete immunization records.
+                        VacciCare solves this problem with a user-friendly platform that keeps all vaccination
+                        information in one secure place.</p>
+                </section>
+
+                <section class="about-section about-with-image">
+                    <div class="about-image">
+                        <img src="images/about.jpeg" alt="Parents and Child" class="section-img">
+                    </div>
+                    <div class="about-text">
+                        <h3>What We Do</h3>
+                        <p>VacciCare provides a comprehensive vaccination management system that allows parents to:</p>
+                        <ul>
+                            <li>Register and manage multiple children's profiles</li>
+                            <li>Track complete vaccination history</li>
+                            <li>Schedule appointments with trusted providers</li>
+                            <li>Receive automatic reminders for upcoming vaccinations</li>
+                            <li>Access vaccination records anytime, anywhere</li>
+                            <li>Connect with qualified healthcare providers</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="about-section values-section">
+                    <h3>Our Values</h3>
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <div class="value-icon">🔒</div>
+                            <h4>Safety First</h4>
+                            <p>We prioritize the security and privacy of your family's health data</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">✓</div>
+                            <h4>Reliability</h4>
+                            <p>Our system is built to be dependable and accurate</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">🌐</div>
+                            <h4>Accessibility</h4>
+                            <p>Easy to use for all parents, regardless of technology skills</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">🤝</div>
+                            <h4>Support</h4>
+                            <p>Dedicated customer service to help you succeed</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="about-section">
+                    <h3>Our Team</h3>
+                    <p>VacciCare was created by a dedicated team of healthcare professionals, software engineers, and
+                        parents who understand the importance of proper vaccination tracking. We're committed to
+                        continuously improving our platform based on user feedback.</p>
+                </section>
+            </div>
+        </div>
+
+        <!-- FEATURES PAGE -->
+        <div id="features" class="page">
+            <div class="card content-page gradient-light-cyan">
+                <h2>Our Complete Features</h2>
+
+                <div class="features-detailed">
+                    <div class="feature-detail">
+                        <div class="feature-detail-icon">👶</div>
+                        <h3>Child Management</h3>
+                        <p>Register multiple children with their personal information, date of birth, and
+                            parent/guardian details. Keep all your children's information organized in one place.</p>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-icon">💉</div>
+                        <h3>Vaccination Records</h3>
+                        <p>Maintain a complete history of all vaccinations including vaccine type, date administered,
+                            healthcare provider, and special notes. Never lose important health records again.</p>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-icon">📅</div>
+                        <h3>Appointment Scheduling</h3>
+                        <p>Schedule vaccination appointments with your preferred healthcare providers. View upcoming
+                            appointments and keep track of vaccination schedules by age.</p>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-icon">🔔</div>
+                        <h3>Smart Notifications</h3>
+                        <p>Receive timely reminders about upcoming vaccinations and appointments. Never miss an
+                            important date with our intelligent notification system.</p>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-icon">🏢</div>
+                        <h3>Provider Directory</h3>
+                        <p>Access our network of trusted healthcare providers. View provider details including location,
+                            contact information, and services offered.</p>
+                    </div>
+
+                    <div class="feature-detail">
+                        <div class="feature-detail-icon">📊</div>
+                        <h3>Analytics Dashboard</h3>
+                        <p>View comprehensive statistics about your children's vaccinations. Get insights into
+                            vaccination progress and upcoming requirements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contact" class="page">
+            <div class="contact-container">
+                <div class="contact-banner">
+                    <img src="images/contact_us.jpeg" alt="Contact Us" class="contact-banner-img">
+                </div>
+                <div class="contact-info">
+                    <h2>Get In Touch</h2>
+                    <p>Have questions or feedback? We'd love to hear from you!</p>
+
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <h4>📧 Email</h4>
+                            <p>support@vaccicare.com</p>
+                        </div>
+                        <div class="contact-item">
+                            <h4>📱 Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                        <div class="contact-item">
+                            <h4>📍 Address</h4>
+                            <p>123 Healthcare Plaza<br>Medical City, MC 12345</p>
+                        </div>
+                        <div class="contact-item">
+                            <h4>🕐 Hours</h4>
+                            <p>Monday - Friday: 9AM - 6PM<br>Saturday: 10AM - 4PM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <h3>Send us a Message</h3>
+                    <form id="contactForm" onsubmit="handleContact(event)">
+                        <div class="form-group">
+                            <label for="contactName">Full Name</label>
+                            <input type="text" id="contactName" required placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address</label>
+                            <input type="email" id="contactEmail" required placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactSubject">Subject</label>
+                            <input type="text" id="contactSubject" required placeholder="Message subject">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Message</label>
+                            <textarea id="contactMessage" required placeholder="Your message here..."
+                                rows="6"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD (After Login) -->
+        <div id="dashboard" class="page">
+            <!-- Welcome Banner -->
+            <div class="dash-welcome" id="dashWelcome">
+                <div class="dash-welcome-text">
+                    <h2 id="dashGreeting">Welcome back!</h2>
+                    <p id="dashSubGreeting">Here's your overview</p>
+                </div>
+                <div class="dash-welcome-date" id="dashDate"></div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="dashboard-stats-grid" id="dashStatsGrid"></div>
+
+            <!-- Quick Actions -->
+            <div class="dash-quick-actions" id="dashQuickActions"></div>
+
+            <!-- Dashboard Sections (2-column layout) -->
+            <div class="dash-sections">
+                <div class="dash-section" id="dashLeftSection"></div>
+                <div class="dash-section" id="dashRightSection"></div>
+            </div>
+
+            <!-- Full-width section (stock table for admin, schedule for parent) -->
+            <div class="dash-full-section" id="dashFullSection"></div>
+        </div>
+
+        <!-- CHILDREN MANAGEMENT -->
+        <div id="children" class="page">
+            <div class="card">
+                <h2>Children Management</h2>
+                <button class="btn btn-primary" onclick="addChild()">+ Add New Child</button>
+                <div id="childrenContainer" class="mt-20"></div>
+            </div>
+        </div>
+
+        <!-- VACCINATIONS PAGE -->
+        <div id="vaccinations" class="page">
+            <div class="card">
+                <h2>Vaccination Records</h2>
+                <button class="btn btn-primary" onclick="openVaccinationModal()">+ Add Vaccination Record</button>
+                <div id="vaccinationsContainer" class="mt-20"></div>
+            </div>
+        </div>
+
+        <!-- APPOINTMENTS PAGE -->
+        <div id="appointments" class="page">
+            <div class="card">
+                <h2>Vaccination Appointments</h2>
+                <button class="btn btn-primary" onclick="openAppointmentModal()">+ Schedule Appointment</button>
+                <div id="appointmentsContainer" class="mt-20"></div>
+            </div>
+        </div>
+
+        <!-- PROVIDERS PAGE – City Hospital Info Only -->
+        <div id="providers" class="page">
+            <div class="card">
+                <h2>🏥 City Hospital</h2>
+                <p class="text-light">This system operates exclusively for City Hospital. All records are automatically linked to this institution.</p>
+                <div id="providersContainer" class="mt-20"></div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS PAGE -->
+        <div id="notifications" class="page">
+            <div class="card">
+                <h2>Notifications</h2>
+                <div id="notificationsContainer"></div>
+            </div>
+        </div>
+
+        <!-- STOCK MANAGEMENT (Admin only) -->
+        <div id="stockManagement" class="page">
+            <div class="card">
+                <h2>Vaccine Stock Management</h2>
+                <p class="text-light">Manage vaccine inventory and set stock alert thresholds</p>
+                <div id="stockTableContainer" class="mt-20"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN USER MANAGEMENT PAGE -->
+        <div id="adminUsers" class="page">
+            <div class="card">
+                <div class="page-header-flex">
+                    <div>
+                        <h2><i class="fas fa-users-cog"></i> User Management</h2>
+                        <p class="text-light">Manage all parents and staff accounts</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddStaffModal()"><i class="fas fa-user-plus"></i> Add Staff</button>
+                </div>
+                <!-- Pending Staff section -->
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-clock"></i> Pending Staff Approvals</h3>
+                    <div id="adminPendingStaffContainer" class="mt-20"></div>
+                </div>
+                <!-- Staff section -->
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-user-md"></i> Staff Accounts</h3>
+                    <div id="adminStaffContainer" class="mt-20"></div>
+                </div>
+                <!-- Parents section -->
+                <div class="admin-section">
+                    <h3 class="admin-section-title"><i class="fas fa-users"></i> Parent Accounts</h3>
+                    <div id="adminParentsContainer" class="mt-20"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PARENT PROFILE PAGE -->
+        <div id="profile" class="page">
+            <div class="card profile-card">
+                <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+                <div id="profileContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Child Modal -->
+    <div id="childModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Child Registration</h2>
+                <button class="close-btn" onclick="closeChildModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="childForm" onsubmit="saveChild(event)">
+                    <div class="form-group">
+                        <label for="childName">Child Name *</label>
+                        <input type="text" id="childName" name="childName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="childDOB">Date of Birth *</label>
+                        <input type="date" id="childDOB" name="childDOB" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="childGender">Gender</label>
+                        <select id="childGender" name="childGender">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentName">Parent/Guardian Name *</label>
+                        <input type="text" id="parentName" name="parentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentEmail">Parent Email *</label>
+                        <input type="email" id="parentEmail" name="parentEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentPhone">Parent Phone</label>
+                        <input type="tel" id="parentPhone" name="parentPhone">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Save Child</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Child Details Modal -->
+    <div id="childDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="childDetailsName">Child Details</h2>
+                <button class="close-btn" onclick="closeChildDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-row">
+                    <label>Age:</label>
+                    <p id="childDetailsAge">N/A</p>
+                </div>
+                <div class="detail-row">
+                    <label>Date of Birth:</label>
+                    <p id="childDetailsDOB">N/A</p>
+                </div>
+                <div class="detail-row">
+                    <label>Parent/Guardian:</label>
+                    <p id="childDetailsParent">N/A</p>
+                </div>
+                <div class="detail-row">
+                    <label>Email:</label>
+                    <p id="childDetailsEmail">N/A</p>
+                </div>
+                <div class="detail-row">
+                    <label>Phone:</label>
+                    <p id="childDetailsPhone">N/A</p>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-success" id="downloadCertBtn">Download PDF Certificate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vaccination Modal -->
+    <div id="vaccinationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Vaccination Record</h2>
+                <button class="close-btn" onclick="closeVaccinationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="vaccinationForm" onsubmit="saveVaccination(event)">
+                    <div class="form-group">
+                        <label for="vaccinationChild">Child *</label>
+                        <select id="vaccinationChild" name="child" required>
+                            <option value="">Select Child</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vaccinationVaccine">Vaccine *</label>
+                        <select id="vaccinationVaccine" name="vaccine" required>
+                            <option value="">Select Vaccine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vaccinationDate">Vaccination Date *</label>
+                        <input type="date" id="vaccinationDate" name="vaccinationDate" required>
+                    </div>
+                    <!-- Provider is automatically set to City Hospital -->
+                    <div class="form-group">
+                        <label>🏥 Hospital</label>
+                        <input type="text" value="City Hospital" disabled style="background:#f0fdf4; color:#166534; font-weight:600; border-color:#86efac;">
+                    </div>
+                    <div class="form-group">
+                        <label for="vaccinationStatus">Status</label>
+                        <select id="vaccinationStatus" name="status">
+                            <option value="completed">Completed</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vaccinationNotes">Notes</label>
+                        <textarea id="vaccinationNotes" name="notes"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Save Vaccination</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule Appointment</h2>
+                <button class="close-btn" onclick="closeAppointmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="appointmentForm" onsubmit="saveAppointment(event)">
+                    <div class="form-group">
+                        <label for="appointmentChild">Child *</label>
+                        <select id="appointmentChild" name="child" required>
+                            <option value="">Select Child</option>
+                        </select>
+                    </div>
+                    <!-- Provider is always City Hospital – no selection needed -->
+                    <div class="form-group">
+                        <label>🏥 Hospital</label>
+                        <input type="text" value="City Hospital" disabled style="background:#f0fdf4; color:#166534; font-weight:600; border-color:#86efac; cursor:default;">
+                        <small class="form-hint" style="color:#166534;">All appointments are automatically assigned to City Hospital.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentDateTime">Appointment Date & Time *</label>
+                        <input type="datetime-local" id="appointmentDateTime" name="appointmentDateTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentVaccine">Vaccine</label>
+                        <select id="appointmentVaccine" name="vaccine">
+                            <option value="">Select Vaccine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentStatus">Status</label>
+                        <select id="appointmentStatus" name="status">
+                            <option value="scheduled">Scheduled</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentNotes">Notes</label>
+                        <textarea id="appointmentNotes" name="notes"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Schedule Appointment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider Modal is removed – City Hospital is the fixed provider -->
+
+    <!-- Add Staff Modal (Admin Only) -->
+    <div id="addStaffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Add New Staff</h2>
+                <button class="close-btn" onclick="closeAddStaffModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStaffForm" onsubmit="handleAddStaff(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newStaffFirstName">First Name *</label>
+                            <input type="text" id="newStaffFirstName" required placeholder="First name">
+                        </div>
+                        <div class="form-group">
+                            <label for="newStaffLastName">Last Name *</label>
+                            <input type="text" id="newStaffLastName" required placeholder="Last name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newStaffEmail">Email Address *</label>
+                        <input type="email" id="newStaffEmail" required placeholder="staff@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="newStaffPhone">Phone Number</label>
+                        <input type="tel" id="newStaffPhone" placeholder="+91 9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label for="newStaffSpecialty">Specialty / Role</label>
+                        <input type="text" id="newStaffSpecialty" placeholder="e.g. Nurse, Pediatrician">
+                    </div>
+                    <!-- Workplace is always City Hospital -->
+                    <div class="form-group">
+                        <label>🏥 Hospital</label>
+                        <input type="text" value="City Hospital" disabled style="background:#f0fdf4; color:#166534; font-weight:600; border-color:#86efac;">
+                    </div>
+                    <div class="form-group">
+                        <label for="newStaffPassword">Temporary Password *</label>
+                        <input type="password" id="newStaffPassword" required placeholder="Min. 6 characters">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-save"></i> Create Staff Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 VacciCare - Child Vaccination Management System. All rights reserved.</p>
+    </footer>
+
+    <!-- Inline alert cleanup: removes any stale alert divs injected by old cached JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove any old-style inline alert/error message elements on every page load
+            const staleSelectors = [
+                '.alert-danger', '.alert-success', '.alert-warning', '.alert-info',
+                '[id$="Message"]', '[id$="Error"]', '[id$="Alert"]',
+                '.login-error', '.error-message', '.success-message', '.warning-message'
+            ];
+            staleSelectors.forEach(function(sel) {
+                document.querySelectorAll(sel).forEach(function(el) {
+                    // Only remove if it's not a static design element (has no children with images/forms)
+                    if (!el.querySelector('form, img, input, select, button, canvas')) {
+                        el.remove();
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="js/utils.js?v=7"></script>
+    <script src="js/api.js?v=7"></script>
+    <script src="js/app.js?v=7"></script>
+</body>
+
+</html>
